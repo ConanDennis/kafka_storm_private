@@ -17,7 +17,7 @@ public class ReadLogSpout implements IRichSpout {
 
     private SpoutOutputCollector collector;
     private BufferedReader br;
-    private String log_name = "D:\\Storm项目相关资料\\log\\temp\\{bt.byr.cn.1.log}.txt";
+    private String log_name = "E:\\byrdata\\{bt.byr.cn.1.log}.txt";
 
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
         this.collector = collector;

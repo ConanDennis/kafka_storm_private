@@ -14,6 +14,7 @@ import backtype.storm.tuple.Values;
 
 public class LogFilterBolt extends BaseBasicBolt {
 
+    private static final long serialVersionUID = 8877743243063240108L;
     private String regular = "([a-z]{4}\\d{2})\\|([1,2])[\\s\\-]+\\[(\\d{1,2}/[a-zA-z]+/\\d{4}:\\d{2}:\\d{2}:\\d{2})\\s\\+\\d+\\]\\s+\"(GET|POST)\\s+(/[^\\s]+)\\s[^\"]*\"";
     private Pattern pattern = Pattern.compile(regular);
 

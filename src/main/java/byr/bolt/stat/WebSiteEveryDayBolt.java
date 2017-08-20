@@ -21,6 +21,7 @@ import redis.clients.jedis.Jedis;
  */
 public class WebSiteEveryDayBolt extends BaseBasicBolt {
 
+    private static final long serialVersionUID = -7536333499541801989L;
     private Map<String,Integer> countMap;
     private Jedis jedis;
 

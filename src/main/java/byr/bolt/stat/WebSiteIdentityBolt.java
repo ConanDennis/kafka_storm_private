@@ -30,6 +30,7 @@ import redis.clients.jedis.Jedis;
  */
 public class WebSiteIdentityBolt extends BaseBasicBolt {
 
+    private static final long serialVersionUID = -1745722904219342739L;
     //Map<日期,Map<时间,值>>
     private Map<String,Map<String,Integer>> teacherMap;
     private Map<String,Map<String,Integer>> studentMap;
