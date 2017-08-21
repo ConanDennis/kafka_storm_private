@@ -13,6 +13,9 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
+/**
+ * 读取本地单个日志文件
+ */
 public class ReadLogSpout implements IRichSpout {
 
     private SpoutOutputCollector collector;

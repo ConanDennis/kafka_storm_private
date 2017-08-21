@@ -20,6 +20,7 @@ public class LogFilterBolt extends BaseBasicBolt {
 
     public void execute(Tuple input, BasicOutputCollector collector) {
         String line = input.getString(0);
+        //        System.out.println("处理当前行===:"+line);
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()){
             String userId = matcher.group(1);//wjif03

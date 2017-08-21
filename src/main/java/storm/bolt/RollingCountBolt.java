@@ -109,7 +109,9 @@ public class RollingCountBolt extends BaseRichBolt {
 		}
 		System.out.println("发送当前窗口统计结果====：" + actualWindowLengthInSeconds);
 		Map<String,Double> scoreCountMap = emit(counts, actualWindowLengthInSeconds);
-		jedis.zadd(Constants.USER_VISIT_ZSETS,scoreCountMap);
+		if(scoreCountMap != null && scoreCountMap.size() > 0){
+			jedis.zadd(Constants.USER_VISIT_ZSETS,scoreCountMap);
+		}
 	}
 	private Map<String,Double> emit(Map<Object, Long> counts, int actualWindowLengthInSeconds) {
 		//排名map
