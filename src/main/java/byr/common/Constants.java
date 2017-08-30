@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
  * Created by Administrator on 2017/8/3.
  */
 public class Constants {
-	public static final String REDIS_HOST = "host";
-	public static final String REDIS_PORT = "port";
+	public static final String REDIS_HOST = "slave2";
+	public static final String REDIS_PORT = "6379";
 	public static final String DEFAULT_REDIS_HOST = "localhost";
 	public static final Integer DEFAULT_REDIS_PORT = 6379;
 	// 网站每日流量统计redis-map-key

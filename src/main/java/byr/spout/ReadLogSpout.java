@@ -18,6 +18,7 @@ import backtype.storm.utils.Utils;
  */
 public class ReadLogSpout implements IRichSpout {
 
+    private static final long serialVersionUID = 5327442457040183574L;
     private SpoutOutputCollector collector;
     private BufferedReader br;
     private String log_name = "E:\\byrdata\\{bt.byr.cn.1.log}.txt";

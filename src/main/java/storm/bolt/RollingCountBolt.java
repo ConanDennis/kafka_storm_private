@@ -89,7 +89,7 @@ public class RollingCountBolt extends BaseRichBolt {
 		this.collector = collector;
 		lastModifiedTracker = new NthLastModifiedTimeTracker(deriveNumWindowChunksFrom(this.windowLengthInSeconds, this.emitFrequencyInSeconds));
 		jedis = new Jedis(topoConf.get(Constants.REDIS_HOST).toString(),((Long)topoConf.get(Constants.REDIS_PORT)).intValue());
-		jedis.select(7);
+		//jedis.select(0);
 	}
 	@Override
 	public void execute(Tuple tuple) {

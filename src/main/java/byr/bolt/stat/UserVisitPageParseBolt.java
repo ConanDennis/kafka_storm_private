@@ -1,4 +1,4 @@
-﻿package byr.bolt.stat;
+package byr.bolt.stat;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

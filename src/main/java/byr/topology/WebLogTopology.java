@@ -1,4 +1,4 @@
-﻿package byr.topology;
+package byr.topology;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -15,6 +15,9 @@ import byr.bolt.stat.UserVisitPageParseBolt;
 import byr.common.Constants;
 import byr.spout.ReadLogSpout;
 import org.apache.storm.shade.com.google.common.collect.ImmutableList;
+import storm.bolt.IntermediateRankingsBolt;
+import storm.bolt.RollingCountBolt;
+import storm.bolt.TotalRankingsBolt;
 import storm.kafka.BrokerHosts;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
@@ -30,29 +33,34 @@ public class WebLogTopology {
 
 	public static void main(String[] args) throws Exception {
 
-		String kafkaZookeeper = "192.168.99.194:2181";
+		String kafkaZookeeper = "slave2:2181";
 		BrokerHosts brokerHosts = new ZkHosts(kafkaZookeeper);
-		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_005", "/weblog8-guiyi", "id");
+		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_001", "/weblog8-guiyi", "id");
 		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-		kafkaConfig.zkServers =  ImmutableList.of("192.168.99.194");
+		kafkaConfig.zkServers =  ImmutableList.of("slave2");
 		kafkaConfig.zkPort = 2181;
 		kafkaConfig.ignoreZkOffsets = true;
 		TopologyBuilder builder = new TopologyBuilder();
 //		builder.setSpout("file-spout", new ReadLogSpout());
 		builder.setSpout("file-spout", new KafkaSpout(kafkaConfig));
 		builder.setBolt("line-filter", new LogFilterBolt(), 4).shuffleGrouping("file-spout");
+
 		//按照用户统计
-//		builder.setBolt("rolling-count", new RollingCountBolt(9, 3),4).fieldsGrouping("line-filter", new Fields("userId"));
-//		builder.setBolt("intermediateRanker", new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping("rolling-count",new Fields("obj"));
-//		builder.setBolt("finalRanker", new TotalRankingsBolt(TOP_N)).globalGrouping("intermediateRanker");
+		builder.setBolt("rolling-count", new RollingCountBolt(9, 3),4).fieldsGrouping("line-filter", new Fields("userId"));
+		builder.setBolt("intermediateRanker", new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping("rolling-count",new Fields("obj"));
+		builder.setBolt("finalRanker", new TotalRankingsBolt(TOP_N)).globalGrouping("intermediateRanker");
+
 		//按照网站每天访问量统计
 		// builder.setBolt("everyday-count", new
 		// WebSiteEveryDayBolt(),1).shuffleGrouping("line-filter");
+
 		//按照身份统计
 		// builder.setBolt("identity-count",new
 		// WebSiteIdentityBolt(),1).shuffleGrouping("line-filter");
+
 		//每个用户访问每个页面的频率统计
-		builder.setBolt("user-page-parse",new UserVisitPageParseBolt()).fieldsGrouping("line-filter", new Fields("userId"));
+		//builder.setBolt("user-page-parse",new UserVisitPageParseBolt()).fieldsGrouping("line-filter", new Fields("userId"));
+
 		submit(args, builder);
 	}
 	private static void submit(String[] args, TopologyBuilder builder) throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
