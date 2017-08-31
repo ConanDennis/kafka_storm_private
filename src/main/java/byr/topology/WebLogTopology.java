@@ -14,6 +14,7 @@ import byr.bolt.LogFilterBolt;
 import byr.bolt.stat.UserVisitPageParseBolt;
 import byr.common.Constants;
 import byr.spout.ReadLogSpout;
+import org.apache.avro.generic.GenericData;
 import org.apache.storm.shade.com.google.common.collect.ImmutableList;
 import storm.bolt.IntermediateRankingsBolt;
 import storm.bolt.RollingCountBolt;
@@ -23,6 +24,12 @@ import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
 import storm.kafka.StringScheme;
 import storm.kafka.ZkHosts;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static backtype.storm.Config.STORM_ZOOKEEPER_PORT;
+import static backtype.storm.Config.STORM_ZOOKEEPER_SERVERS;
 
 /**
  * website日志
@@ -35,7 +42,7 @@ public class WebLogTopology {
 
 		String kafkaZookeeper = "slave2:2181";
 		BrokerHosts brokerHosts = new ZkHosts(kafkaZookeeper);
-		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_001", "/weblog8-guiyi", "id");
+		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_002", "/weblog2", "id");
 		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
 		kafkaConfig.zkServers =  ImmutableList.of("slave2");
 		kafkaConfig.zkPort = 2181;
@@ -65,10 +72,11 @@ public class WebLogTopology {
 	}
 	private static void submit(String[] args, TopologyBuilder builder) throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
 		Config conf = new Config();
-		conf.setNumWorkers(3);
-		// conf.setDebug(true);
+		//conf.setNumWorkers(3);
+		//conf.setDebug(true);
 		conf.put(Constants.REDIS_HOST, Constants.DEFAULT_REDIS_HOST);
 		conf.put(Constants.REDIS_PORT, Constants.DEFAULT_REDIS_PORT);
+
 		if (args != null && args.length > 0) {
 			if (args.length == 3) {
 				conf.put(Constants.REDIS_HOST, args[1]);
@@ -78,9 +86,15 @@ public class WebLogTopology {
 			StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
 		} else {
 			conf.setMaxTaskParallelism(3);
+			List<String> zookeeperList = new ArrayList<>();
+			zookeeperList.add(Constants.DEFAULT_REDIS_HOST);
+			conf.put(STORM_ZOOKEEPER_SERVERS, zookeeperList);
+			conf.put(STORM_ZOOKEEPER_PORT, Constants.DEFAULT_REDIS_PORT);
+
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("local-host", conf, builder.createTopology());
-			Thread.sleep(70000);
+			Thread.sleep(10000);
+			cluster.killTopology("local-host");
 			cluster.shutdown();
 		}
 		Utils.sleep(600000);
