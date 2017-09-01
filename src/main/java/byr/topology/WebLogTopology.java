@@ -12,6 +12,8 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
 import byr.bolt.LogFilterBolt;
 import byr.bolt.stat.UserVisitPageParseBolt;
+import byr.bolt.stat.WebSiteEveryDayBolt;
+import byr.bolt.stat.WebSiteIdentityBolt;
 import byr.common.Constants;
 import byr.spout.ReadLogSpout;
 import org.apache.avro.generic.GenericData;
@@ -42,7 +44,7 @@ public class WebLogTopology {
 
 		String kafkaZookeeper = "slave2:2181";
 		BrokerHosts brokerHosts = new ZkHosts(kafkaZookeeper);
-		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_002", "/weblog2", "id");
+		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_002", "/weblog5", "id");
 		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
 		kafkaConfig.zkServers =  ImmutableList.of("slave2");
 		kafkaConfig.zkPort = 2181;
@@ -52,27 +54,25 @@ public class WebLogTopology {
 		builder.setSpout("file-spout", new KafkaSpout(kafkaConfig));
 		builder.setBolt("line-filter", new LogFilterBolt(), 4).shuffleGrouping("file-spout");
 
-		//按照用户统计
-		builder.setBolt("rolling-count", new RollingCountBolt(9, 3),4).fieldsGrouping("line-filter", new Fields("userId"));
-		builder.setBolt("intermediateRanker", new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping("rolling-count",new Fields("obj"));
-		builder.setBolt("finalRanker", new TotalRankingsBolt(TOP_N)).globalGrouping("intermediateRanker");
+		//按照用户统计 topic:test_002
+//		builder.setBolt("rolling-count", new RollingCountBolt(9, 3),4).fieldsGrouping("line-filter", new Fields("userId"));
+//		builder.setBolt("intermediateRanker", new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping("rolling-count",new Fields("obj"));
+//		builder.setBolt("finalRanker", new TotalRankingsBolt(TOP_N)).globalGrouping("intermediateRanker");
 
-		//按照网站每天访问量统计
-		// builder.setBolt("everyday-count", new
-		// WebSiteEveryDayBolt(),1).shuffleGrouping("line-filter");
+		//按照网站每天访问量统计 topic:test_001
+//		 builder.setBolt("everyday-count", new WebSiteEveryDayBolt(),1).shuffleGrouping("line-filter");
 
-		//按照身份统计
-		// builder.setBolt("identity-count",new
-		// WebSiteIdentityBolt(),1).shuffleGrouping("line-filter");
+		//按照身份统计  topic:test_003
+		 builder.setBolt("identity-count",new WebSiteIdentityBolt(),1).shuffleGrouping("line-filter");
 
-		//每个用户访问每个页面的频率统计
-		//builder.setBolt("user-page-parse",new UserVisitPageParseBolt()).fieldsGrouping("line-filter", new Fields("userId"));
+		//每个用户访问每个页面的频率统计  topic:test_004
+//		builder.setBolt("user-page-parse",new UserVisitPageParseBolt()).fieldsGrouping("line-filter", new Fields("userId"));
 
 		submit(args, builder);
 	}
 	private static void submit(String[] args, TopologyBuilder builder) throws AlreadyAliveException, InvalidTopologyException, InterruptedException, AuthorizationException {
 		Config conf = new Config();
-		//conf.setNumWorkers(3);
+		conf.setNumWorkers(3);
 		//conf.setDebug(true);
 		conf.put(Constants.REDIS_HOST, Constants.DEFAULT_REDIS_HOST);
 		conf.put(Constants.REDIS_PORT, Constants.DEFAULT_REDIS_PORT);

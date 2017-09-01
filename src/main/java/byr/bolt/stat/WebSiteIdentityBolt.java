@@ -40,7 +40,7 @@ public class WebSiteIdentityBolt extends BaseBasicBolt {
         studentMap = new ConcurrentHashMap<>();
         teacherMap = new ConcurrentHashMap<>();
         jedis = new Jedis(stormConf.get(Constants.REDIS_HOST).toString(),((Long)stormConf.get(Constants.REDIS_PORT)).intValue());
-        jedis.select(7);
+        jedis.select(0);
     }
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {

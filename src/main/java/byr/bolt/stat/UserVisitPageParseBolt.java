@@ -41,7 +41,7 @@ public class UserVisitPageParseBolt extends BaseBasicBolt {
         super.prepare(stormConf, context);
         countMap = new ConcurrentHashMap<>();
         jedis = new Jedis(stormConf.get(Constants.REDIS_HOST).toString(),((Long)stormConf.get(Constants.REDIS_PORT)).intValue());
-        jedis.select(7);
+        jedis.select(0);
         pageSet = new HashSet<>();
         try {
             bufferedWriter = new BufferedWriter(new FileWriter(Constants.cluster_filter));
