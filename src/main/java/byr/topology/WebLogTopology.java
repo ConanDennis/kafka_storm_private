@@ -44,7 +44,7 @@ public class WebLogTopology {
 
 		String kafkaZookeeper = "slave2:2181";
 		BrokerHosts brokerHosts = new ZkHosts(kafkaZookeeper);
-		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_002", "/weblog5", "id");
+		SpoutConfig kafkaConfig = new SpoutConfig(brokerHosts, "test_001", "/weblog2", "id");
 		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
 		kafkaConfig.zkServers =  ImmutableList.of("slave2");
 		kafkaConfig.zkPort = 2181;
@@ -54,18 +54,18 @@ public class WebLogTopology {
 		builder.setSpout("file-spout", new KafkaSpout(kafkaConfig));
 		builder.setBolt("line-filter", new LogFilterBolt(), 4).shuffleGrouping("file-spout");
 
-		//按照用户统计 topic:test_002
+		//按照用户统计
 //		builder.setBolt("rolling-count", new RollingCountBolt(9, 3),4).fieldsGrouping("line-filter", new Fields("userId"));
 //		builder.setBolt("intermediateRanker", new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping("rolling-count",new Fields("obj"));
 //		builder.setBolt("finalRanker", new TotalRankingsBolt(TOP_N)).globalGrouping("intermediateRanker");
 
-		//按照网站每天访问量统计 topic:test_001
-//		 builder.setBolt("everyday-count", new WebSiteEveryDayBolt(),1).shuffleGrouping("line-filter");
+		//按照网站每天访问量统计
+		 builder.setBolt("everyday-count", new WebSiteEveryDayBolt(),1).shuffleGrouping("line-filter");
 
-		//按照身份统计  topic:test_003
-		 builder.setBolt("identity-count",new WebSiteIdentityBolt(),1).shuffleGrouping("line-filter");
+		//按照身份统计
+//		 builder.setBolt("identity-count",new WebSiteIdentityBolt(),1).shuffleGrouping("line-filter");
 
-		//每个用户访问每个页面的频率统计  topic:test_004
+		//每个用户访问每个页面的频率统计
 //		builder.setBolt("user-page-parse",new UserVisitPageParseBolt()).fieldsGrouping("line-filter", new Fields("userId"));
 
 		submit(args, builder);
@@ -86,14 +86,15 @@ public class WebLogTopology {
 			StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
 		} else {
 			conf.setMaxTaskParallelism(3);
-			List<String> zookeeperList = new ArrayList<>();
-			zookeeperList.add(Constants.DEFAULT_REDIS_HOST);
-			conf.put(STORM_ZOOKEEPER_SERVERS, zookeeperList);
-			conf.put(STORM_ZOOKEEPER_PORT, Constants.DEFAULT_REDIS_PORT);
+
+//			List<String> zookeeperList = new ArrayList<>();
+//			zookeeperList.add(Constants.DEFAULT_REDIS_HOST);
+//			conf.put(STORM_ZOOKEEPER_SERVERS, zookeeperList);
+//			conf.put(STORM_ZOOKEEPER_PORT, Constants.DEFAULT_REDIS_PORT);
 
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("local-host", conf, builder.createTopology());
-			Thread.sleep(10000);
+			Thread.sleep(60000);
 			cluster.killTopology("local-host");
 			cluster.shutdown();
 		}

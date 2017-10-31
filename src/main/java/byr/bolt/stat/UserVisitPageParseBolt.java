@@ -135,6 +135,7 @@ public class UserVisitPageParseBolt extends BaseBasicBolt {
             }
 //            System.out.println(map.getKey() + "====$$$$===" + map.getValue());
         }
+
         System.out.println("=================cluster end====================="+result.size());
         try {
             bufferedWriter.close();

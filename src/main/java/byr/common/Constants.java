@@ -23,7 +23,7 @@ public class Constants {
 	// 用户访问频率统计redis-zsets(value:用户名)
 	public static final String USER_VISIT_ZSETS = "user_visit_zsets";
 
-	public static final String cluster_filter = "D:\\Storm项目相关资料\\log\\temp\\data.log";
+	public static final String cluster_filter = "D:\\workspace\\data.log";
     public static final Pattern jc_pattern = Pattern.compile("/jc[^\\s]+");
 	public final static List<String> cluster_urls;
 	static {

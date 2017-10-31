@@ -27,7 +27,7 @@ public class LogFilterBolt extends BaseBasicBolt {
             String flag = matcher.group(2);//2
             String time = matcher.group(3);//#27/Jul/2017:23:42:18
             String req = matcher.group(5);//#/shoutbox.php?type=shoutbox
-            //System.out.println("######userId: "+userId+"====flag: "+flag+"====time: "+time+"====req: "+req);
+            System.out.println("######userId: "+userId+"====flag: "+flag+"====time: "+time+"====req: "+req);
             if(StringUtils.isBlank(userId) || StringUtils.isBlank(flag) || StringUtils.isBlank(time) || StringUtils.isBlank(req)){
                 System.out.println("userId: "+userId+"====flag: "+flag+"====time: "+time+"====req: "+req);
             }

@@ -81,11 +81,11 @@ public class WebSiteEveryDayBolt extends BaseBasicBolt {
             map.put(Constants.EVERYDAY_COUNT_KEY,sb.toString());
             jedis.hmset(Constants.EVERYDAY_COUNT_MAP, map);
         }
-//        Iterator<Map.Entry<String,Integer>> iter = this.countMap.entrySet().iterator();
-//        while (iter.hasNext()) {
-//            Map.Entry<String, Integer> entry = iter.next();
-//            System.out.println(entry.getKey() + "============" + entry.getValue());
-//        }
+        Iterator<Map.Entry<String,Integer>> iter = this.countMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, Integer> entry = iter.next();
+            System.out.println(entry.getKey() + "============" + entry.getValue());
+        }
     }
 
 }
